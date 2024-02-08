@@ -59,11 +59,10 @@ class DBStorage:
         self.__session.add(obj)
 
     def get(self, cls, id):
-        """
-        fetches specific object
-        :param cls: class of object as string
-        :param id: id of object as string
-        :return: found object or None
+        """ fetches specific object
+            :param cls: class of object as string
+            :param id: id of object as string
+            :return: found object or None
         """
         all_class = self.all(cls)
 
@@ -74,10 +73,9 @@ class DBStorage:
         return None
 
     def count(self, cls=None):
-        """
-        count of how many instances of a class
-        :param cls: class name
-        :return: count of instances of a class
+        """ count of how many instances of a class
+            :param cls: class name
+            :return: count of instances of a class
         """
         return len(self.all(cls))
 
