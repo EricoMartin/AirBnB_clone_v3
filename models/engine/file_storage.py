@@ -49,11 +49,10 @@ class FileStorage:
             json.dump(json_objects)
 
     def get(self, cls, id):
-        """
-        gets specific object
-        :param cls: class
-        :param id: id of instance
-        :return: object or None
+        """ gets specific object
+            :param cls: class
+            :param id: id of instance
+            :return: object or None
         """
         all_class = self.all(cls)
 
@@ -64,10 +63,9 @@ class FileStorage:
         return None
 
     def count(self, cls=None):
-        """
-        count of instances
-        :param cls: class
-        :return: number of instances
+        """ count of instances
+            :param cls: class
+            :return: number of instances
         """
 
         return len(self.all(cls))
@@ -79,7 +77,7 @@ class FileStorage:
                 jo = json.load(f)
             for key in jo:
                 self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
+        except Exception:
             pass
 
     def delete(self, obj=None):
