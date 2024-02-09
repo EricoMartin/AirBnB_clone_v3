@@ -10,7 +10,7 @@ from sqlalchemy import Column, String, ForeignKey
 
 class Review(BaseModel, Base):
     """Representation of Review """
-    if storage_type == 'db':
+    if models.storage_t == 'db':
         __tablename__ = 'reviews'
         place_id = Column(String(60), ForeignKey('places.id'), nullable=False)
         user_id = Column(String(60), ForeignKey('users.id'), nullable=False)

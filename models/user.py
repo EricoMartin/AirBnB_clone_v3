@@ -7,19 +7,26 @@ import sqlalchemy
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 import hashlib
-storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 
 
 class User(BaseModel, Base):
     """Representation of a user """
-    if storage_type == 'db':
+    if models.storage_t == 'db':
         __tablename__ = 'users'
         email = Column(String(128), nullable=False)
         password = Column(String(128), nullable=False)
         first_name = Column(String(128), nullable=True)
         last_name = Column(String(128), nullable=True)
-        places = relationship("Place", backref="user")
-        reviews = relationship("Review", backref="user")
+        places = relationship(
+            "Place",
+            cascade="all, delete, delete-orphan",
+            backref="user"
+        )
+        reviews = relationship(
+            "Review",
+            cascade="all, delete, delete-orphan",
+            backref="user"
+        )
     else:
         email = ""
         password = ""
@@ -28,13 +35,13 @@ class User(BaseModel, Base):
 
     def __init__(self, *args, **kwargs):
         """initializes user"""
-        if kwargs:
-            pwd = kwargs.pop('password', None)
-            if pwd:
-                # Hash the password using MD5
-                secure = hashlib.md5()
-                secure.update(pwd.encode("utf-8"))
-                secure_password = secure.hexdigest()
-                kwargs['password'] = secure_password
-
         super().__init__(*args, **kwargs)
+
+    def __setattr__(self, __name: str, __value) -> None:
+        '''Sets an attribute of this class to a given value.'''
+        if __name == 'password':
+            if type(__value) is str:
+                m = hashlib.md5(bytes(__value, 'utf-8'))
+                super().__setattr__(__name, m.hexdigest())
+        else:
+            super().__setattr__(__name, __value)

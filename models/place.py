@@ -8,7 +8,7 @@ from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
 storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 
-if storage_type == 'db':
+if models.storage_t == 'db':
     place_amenity = Table('place_amenity', Base.metadata,
                           Column('place_id', String(60),
                                  ForeignKey('places.id', onupdate='CASCADE',
@@ -22,7 +22,7 @@ if storage_type == 'db':
 
 class Place(BaseModel, Base):
     """Representation of Place """
-    if storage_type == 'db':
+    if models.storage_t == 'db':
         __tablename__ = 'places'
         city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
         user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
@@ -55,7 +55,7 @@ class Place(BaseModel, Base):
         """initializes Place"""
         super().__init__(*args, **kwargs)
 
-    if storage_type != 'db':
+    if models.storage_t != 'db':
         @property
         def reviews(self):
             """getter attribute returns the list of Review instances"""
