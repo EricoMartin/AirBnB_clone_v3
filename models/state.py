@@ -12,7 +12,7 @@ storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 
 class State(BaseModel, Base):
     """Representation of state """
-    if storage_type == "db":
+    if models.storage_t == "db":
         __tablename__ = 'states'
         name = Column(String(128), nullable=False)
         cities = relationship("City", backref="state",

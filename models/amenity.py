@@ -2,16 +2,15 @@
 """ holds class Amenity"""
 import models
 from models.base_model import BaseModel, Base
-import os
+from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 
 
 class Amenity(BaseModel, Base):
     """Representation of Amenity """
-    if storage_type == 'db':
+    if models.storage_t == 'db':
         __tablename__ = 'amenities'
         name = Column(String(128), nullable=False)
     else:
