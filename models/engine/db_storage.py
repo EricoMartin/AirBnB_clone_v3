@@ -6,19 +6,20 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
 from models import base_model, amenity, city, place, review, state, user
+from models.amenity import Amenity
+from models.base_model import BaseModel, Base
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
+
+"""handles long term storage of all class instances"""
+classes = {"Amenity": Amenity, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class DBStorage:
-    """handles long term storage of all class instances"""
-    CNC = {
-        'BaseModel': base_model.BaseModel,
-        'Amenity': amenity.Amenity,
-        'City': city.City,
-        'Place': place.Place,
-        'Review': review.Review,
-        'State': state.State,
-        'User': user.User
-    }
 
     """ handles storage for database """
     __engine = None
@@ -38,31 +39,24 @@ class DBStorage:
     def all(self, cls=None):
         """ returns a dictionary of all objects """
         obj_dict = {}
-        if cls:
-            obj_class = self.__session.query(self.CNC.get(cls)).all()
-            for item in obj_class:
-                key = str(item.__class__.__name__) + "." + str(item.id)
-                obj_dict[key] = item
+        for clss in classes:
+            if cls is None or cls is classes[clss] or cls is clss:
+                obj_class = self.__session.query(classes[clss]).all()
+                for item in obj_class:
+                    key = str(item.__class__.__name__) + "." + item.id
+                    obj_dict[key] = item
             return obj_dict
-        for class_name in self.CNC:
-            if class_name == 'BaseModel':
-                continue
-            obj_class = self.__session.query(
-                self.CNC.get(class_name)).all()
-            for item in obj_class:
-                key = str(item.__class__.__name__) + "." + str(item.id)
-                obj_dict[key] = item
-        return obj_dict
 
     def new(self, obj):
         """ adds objects to current database session """
         self.__session.add(obj)
 
     def get(self, cls, id):
-        """ fetches specific object
-            :param cls: class of object as string
-            :param id: id of object as string
-            :return: found object or None
+        """
+        fetches specific object
+        :param cls: class of object as string
+        :param id: id of object as string
+        :return: found object or None
         """
         all_class = self.all(cls)
 
@@ -73,9 +67,10 @@ class DBStorage:
         return None
 
     def count(self, cls=None):
-        """ count of how many instances of a class
-            :param cls: class name
-            :return: count of instances of a class
+        """
+        count of how many instances of a class
+        :param cls: class name
+        :return: count of instances of a class
         """
         return len(self.all(cls))
 
