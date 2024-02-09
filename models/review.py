@@ -2,7 +2,8 @@
 """ holds class Review"""
 import models
 from models.base_model import BaseModel, Base
-from os import getenv
+import os
+storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 import sqlalchemy
 from sqlalchemy import Column, String, ForeignKey
 

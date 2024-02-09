@@ -2,10 +2,11 @@
 """ holds class Place"""
 import models
 from models.base_model import BaseModel, Base
-from os import getenv
+import os
 import sqlalchemy
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
+storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 
 if models.storage_t == 'db':
     place_amenity = Table('place_amenity', Base.metadata,

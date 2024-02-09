@@ -22,7 +22,14 @@ FileStorage = file_storage.FileStorage
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
 
+User = models.user.User
+BaseModel = models.base_model.BaseModel
+FileStorage = engine.file_storage.FileStorage
+storage = models.storage
+F = './dev/file.json'
+storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 
+@unittest.skipIf(storage_type == 'db', 'skip if environ is db')
 class TestFileStorageDocs(unittest.TestCase):
     """Tests to check the documentation and style of FileStorage class"""
     @classmethod
@@ -113,3 +120,155 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+
+@unittest.skipIf(storage_type == 'db', 'skip if environ is not db')
+class TestStorageGet(unittest.TestCase):
+    """
+    Testing `get()` method in DBStorage
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        setup tests for class
+        """
+        print('\n\n.................................')
+        print('...... Testing Get() Method ......')
+        print('.......... Place  Class ..........')
+        print('.................................\n\n')
+
+    def setUp(self):
+        """
+        setup method
+        """
+        self.state = models.state.State(name="Florida")
+        self.state.save()
+
+    def test_get_method_obj(self):
+        """
+        testing get() method
+        :return: True if pass, False if not pass
+        """
+
+        print(self.state.id)
+        result = storage.get(cls="State", id=self.state.id)
+
+        self.assertIsInstance(result, models.state.State)
+
+    def test_get_method_return(self):
+        """
+        testing get() method for id match
+        :return: True if pass, false if not pass
+        """
+        result = storage.get(cls="State", id=str(self.state.id))
+
+        self.assertEqual(self.state.id, result.id)
+
+    def test_get_method_none(self):
+        """
+        testing get() method for None return
+        :return: True if pass, false if not pass
+        """
+        result = storage.get(cls="State", id="doesnotexist")
+
+        self.assertIsNone(result)
+
+
+@unittest.skipIf(storage_type == 'db', 'skip if environ is not db')
+class TestStorageCount(unittest.TestCase):
+    """
+    tests count() method in DBStorage
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        setup tests for class
+        """
+        print('\n\n.................................')
+        print('...... Testing Get() Method ......')
+        print('.......... Place  Class ..........')
+        print('.................................\n\n')
+
+    def setup(self):
+        """
+        setup method
+        """
+        models.state.State()
+        models.state.State()
+        models.state.State()
+        models.state.State()
+        models.state.State()
+        models.state.State()
+        models.state.State()
+
+    def test_count_all(self):
+        """
+        testing counting all instances
+        :return: True if pass, false if not pass
+        """
+        result = storage.count()
+
+        self.assertEqual(len(storage.all()), result)
+
+    def test_count_state(self):
+        """
+        testing counting state instances
+        :return: True if pass, false if not pass
+        """
+        result = storage.count(cls="State")
+
+        self.assertEqual(len(storage.all("State")), result)
+
+    def test_count_city(self):
+        """
+        testing counting non existent
+        :return: True if pass, false if not pass
+        """
+        result = storage.count(cls="City")
+
+        self.assertEqual(
+            int(0 if len(storage.all("City")) is None else
+                len(storage.all("City"))), result)
+
+    def test_get(self):
+        """test that get returns an object of a given class by id."""
+        storage = models.storage
+        obj = State(name='Michigan')
+        obj.save()
+        self.assertEqual(obj.id, storage.get(State, obj.id).id)
+        self.assertEqual(obj.name, storage.get(State, obj.id).name)
+        self.assertIsNot(obj, storage.get(State, obj.id + 'op'))
+        self.assertIsNone(storage.get(State, obj.id + 'op'))
+        self.assertIsNone(storage.get(State, 45))
+        self.assertIsNone(storage.get(None, obj.id))
+        self.assertIsNone(storage.get(int, obj.id))
+        with self.assertRaises(TypeError):
+            storage.get(State, obj.id, 'op')
+        with self.assertRaises(TypeError):
+            storage.get(State)
+        with self.assertRaises(TypeError):
+            storage.get()
+
+    def test_count(self):
+        """test that count returns the number of objects of a given class."""
+        storage = models.storage
+        self.assertIs(type(storage.count()), int)
+        self.assertIs(type(storage.count(None)), int)
+        self.assertIs(type(storage.count(int)), int)
+        self.assertIs(type(storage.count(State)), int)
+        self.assertEqual(storage.count(), storage.count(None))
+        State(name='Lagos').save()
+        self.assertGreater(storage.count(State), 0)
+        self.assertEqual(storage.count(), storage.count(None))
+        a = storage.count(State)
+        State(name='Benue').save()
+        self.assertGreater(storage.count(State), a)
+        Amenity(name='Free WiFi').save()
+        self.assertGreater(storage.count(), storage.count(State))
+        with self.assertRaises(TypeError):
+            storage.count(State, 'op')
+
+
+if __name__ == '__main__':
+    unittest.main
