@@ -24,10 +24,11 @@ classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
 
 User = models.user.User
 BaseModel = models.base_model.BaseModel
-FileStorage = engine.file_storage.FileStorage
+FileStorage = file_storage.FileStorage
 storage = models.storage
 F = './dev/file.json'
 storage_type = os.environ.get('HBNB_TYPE_STORAGE')
+
 
 @unittest.skipIf(storage_type == 'db', 'skip if environ is db')
 class TestFileStorageDocs(unittest.TestCase):
@@ -120,6 +121,7 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+
 
 @unittest.skipIf(storage_type == 'db', 'skip if environ is not db')
 class TestStorageGet(unittest.TestCase):

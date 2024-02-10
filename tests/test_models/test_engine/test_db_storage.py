@@ -90,6 +90,7 @@ class TestFileStorage(unittest.TestCase):
     def test_save(self):
         """Test that save properly saves objects to file.json"""
 
+
 @unittest.skipIf(storage_type != 'db', 'skip if environ is not db')
 class TestStorageGet(unittest.TestCase):
     """
