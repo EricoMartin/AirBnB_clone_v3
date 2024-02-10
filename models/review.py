@@ -3,7 +3,6 @@
 import models
 from models.base_model import BaseModel, Base
 import os
-storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 import sqlalchemy
 from sqlalchemy import Column, String, ForeignKey
 
